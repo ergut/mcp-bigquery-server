@@ -1,5 +1,5 @@
 # BigQuery MCP Server
-[![smithery badge](https://smithery.ai/badge/@ergut/mcp-bigquery-server)](https://smithery.ai/protocol/@ergut/mcp-bigquery-server)
+[![smithery badge](https://smithery.ai/badge/@ergut/mcp-bigquery-server)](https://smithery.ai/server/@ergut/mcp-bigquery-server)
 <div align="center">
   <img src="assets/mcp-bigquery-server-logo.png" alt="BigQuery MCP Server Logo" width="400"/>
 </div>
@@ -42,10 +42,10 @@ Here's all you need to do:
 - Claude Desktop (currently the only supported LLM interface)
 
 ### Option 1: Quick Install via Smithery (Recommended)
-To install BigQuery MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/protocol/@ergut/mcp-bigquery-server), run this command in your terminal:
+To install BigQuery MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@ergut/mcp-bigquery-server), run this command in your terminal:
 
 ```bash
-npx @smithery/cli install @ergut/mcp-bigquery-server --client claude
+npx -y @smithery/cli install @ergut/mcp-bigquery-server --client claude
 ```
 The installer will prompt you for:
 
