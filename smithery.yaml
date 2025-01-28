@@ -1,0 +1,24 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - projectId
+    properties:
+      projectId:
+        type: string
+        description: Your Google Cloud project ID.
+      location:
+        type: string
+        default: us-central1
+        description: The BigQuery location, defaults to 'us-central1'.
+      keyFile:
+        type: string
+        description: Path to the service account key JSON file.
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({command: 'node', args: ['dist/index.js', '--project-id', config.projectId, '--location', config.location, '--key-file', config.keyFile]})
