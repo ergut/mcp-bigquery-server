@@ -8,6 +8,8 @@
 
 This is a server that lets your LLMs (like Claude) talk directly to your BigQuery data! Think of it as a friendly translator that sits between your AI assistant and your database, making sure they can chat securely and efficiently.
 
+<a href="https://glama.ai/mcp/servers/dflwpk8hgv"><img width="380" height="200" src="https://glama.ai/mcp/servers/dflwpk8hgv/badge" alt="BigQuery Server MCP server" /></a>
+
 ### Quick Example
 ```text
 You: "What were our top 10 customers last month?"
