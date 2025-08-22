@@ -1,4 +1,5 @@
 # BigQuery MCP Server
+[![Trust Score](https://archestra.ai/mcp-catalog/api/badge/quality/ergut/mcp-bigquery-server)](https://archestra.ai/mcp-catalog/ergut__mcp-bigquery-server)
 [![smithery badge](https://smithery.ai/badge/@ergut/mcp-bigquery-server)](https://smithery.ai/protocol/@ergut/mcp-bigquery-server)
 <div align="center">
   <img src="assets/mcp-bigquery-server-logo.png" alt="BigQuery MCP Server Logo" width="400"/>
