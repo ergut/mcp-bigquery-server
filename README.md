@@ -33,6 +33,10 @@ Here's all you need to do:
 - Analyze data within safe limits (1GB query limit by default)
 - Keep your data secure (read-only access)
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/ergut-mcp-bigquery-server).
+
 ## Quick Start 🚀
 
 ### Prerequisites
