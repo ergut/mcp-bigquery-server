@@ -10,6 +10,7 @@ import {
   extractReferencedTables,
   tableMatchesAllowedEntry,
   enforceAllowedTables,
+  validateIsSelectStatement,
 } from './sql-enforcement.js';
 
 // ---------------------------------------------------------------------------
@@ -663,5 +664,63 @@ describe('enforceAllowedTables', () => {
     expect(() => {
       enforceAllowedTables('SELECT * FROM project.dataset.users', ['dataset.users']);
     }).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// validateIsSelectStatement
+// ---------------------------------------------------------------------------
+describe('validateIsSelectStatement', () => {
+  it('allows SELECT statements', () => {
+    expect(() => validateIsSelectStatement('SELECT')).not.toThrow();
+  });
+
+  it('blocks INSERT', () => {
+    expect(() => validateIsSelectStatement('INSERT')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks UPDATE', () => {
+    expect(() => validateIsSelectStatement('UPDATE')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks DELETE', () => {
+    expect(() => validateIsSelectStatement('DELETE')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks CREATE_TABLE', () => {
+    expect(() => validateIsSelectStatement('CREATE_TABLE')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks DROP_TABLE', () => {
+    expect(() => validateIsSelectStatement('DROP_TABLE')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks MERGE', () => {
+    expect(() => validateIsSelectStatement('MERGE')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks EXPORT_DATA — previously bypassable via regex', () => {
+    expect(() => validateIsSelectStatement('EXPORT_DATA')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks LOAD_DATA — previously bypassable via regex', () => {
+    expect(() => validateIsSelectStatement('LOAD_DATA')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks CALL — previously bypassable via regex', () => {
+    expect(() => validateIsSelectStatement('CALL')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks ASSERT — previously bypassable via regex', () => {
+    expect(() => validateIsSelectStatement('ASSERT')).toThrow('Only SELECT queries are allowed');
+  });
+
+  it('blocks undefined (dry run did not return statementType)', () => {
+    expect(() => validateIsSelectStatement(undefined)).toThrow('Only SELECT queries are allowed');
+    expect(() => validateIsSelectStatement(undefined)).toThrow('UNKNOWN');
+  });
+
+  it('includes the actual statementType in the error message', () => {
+    expect(() => validateIsSelectStatement('EXPORT_DATA')).toThrow('EXPORT_DATA');
   });
 });

@@ -16,6 +16,7 @@ import { runDailyScanIfNeeded } from './sensitive-field-scanner.js';
 import {
   enforceFieldRestrictions,
   enforceAllowedTables,
+  validateIsSelectStatement,
   type FieldRestrictionMap,
 } from './sql-enforcement.js';
 
@@ -457,12 +458,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     let sql = request.params.arguments?.sql as string;
 
-    // Validate read-only query
-    const forbiddenPattern = /\b(INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|MERGE|TRUNCATE|GRANT|REVOKE|EXECUTE|BEGIN|COMMIT|ROLLBACK)\b/i;
-    if (forbiddenPattern.test(sql)) {
-      throw new Error('Only READ operations are allowed');
-    }    
-
     try {
       // Qualify INFORMATION_SCHEMA queries
       if (sql.toUpperCase().includes('INFORMATION_SCHEMA')) {
@@ -482,6 +477,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           break;
       }
 
+      // Use BigQuery's dry run to definitively verify this is a SELECT statement.
+      // This is more reliable than a regex blocklist — the API parses the SQL and
+      // reports the actual statementType, so EXPORT DATA, LOAD DATA, CALL, DECLARE,
+      // SET and any future write-capable statements are all blocked automatically.
+      const [dryRunJob] = await bigquery.createQueryJob({
+        query: sql,
+        location: config.location,
+        dryRun: true,
+      });
+      const statementType = dryRunJob.metadata?.statistics?.query?.statementType;
+      validateIsSelectStatement(statementType);
+
       const [rows] = await bigquery.query({
         query: sql,
         location: config.location,
@@ -499,6 +506,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       // Enforcement errors (field restrictions, table allowlist) are returned as
       // non-errors so the LLM can reformulate its query based on the guidance.
       if (error instanceof Error && (
+        message.includes('Only SELECT queries are allowed') ||
         message.includes('Restricted fields') ||
         message.includes('Access denied') ||
         message.includes('Unable to determine')

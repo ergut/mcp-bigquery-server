@@ -424,3 +424,17 @@ export function enforceAllowedTables(sql: string, allowedTables: string[]): void
     );
   }
 }
+
+/**
+ * Validates that the statementType returned by BigQuery's dry run is SELECT.
+ * Throws if the statement is anything else (INSERT, UPDATE, DELETE, EXPORT DATA,
+ * LOAD DATA, CALL, DECLARE, SET, etc.), preventing write operations regardless
+ * of how they are spelled or obfuscated.
+ */
+export function validateIsSelectStatement(statementType: string | undefined): void {
+  if (statementType !== 'SELECT') {
+    throw new Error(
+      `Only SELECT queries are allowed. This query was identified as: ${statementType ?? 'UNKNOWN'}`,
+    );
+  }
+}
