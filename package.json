@@ -1,6 +1,6 @@
 {
   "name": "@ergut/mcp-bigquery-server",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "MCP server for interacting with BigQuery databases",
   "license": "MIT",
   "homepage": "https://oredata.com",
