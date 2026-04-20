@@ -16,7 +16,7 @@ export function escapeRegExp(value: string): string {
 
 export function buildTableAliasMap(sql: string): Record<string, string> {
   const aliasMap: Record<string, string> = {};
-  const tableRefPattern = /\b(?:from|join)\s+([a-z0-9_.]+)(?:\s+(?:as\s+)?([a-z0-9_]+))?/g;
+  const tableRefPattern = /\b(?:from|join)\s+([a-z0-9_.\-]+)(?:\s+(?:as\s+)?([a-z0-9_]+))?/g;
   let match: RegExpExecArray | null;
 
   while ((match = tableRefPattern.exec(sql)) !== null) {
@@ -86,7 +86,7 @@ export function extractStarUsages(selectClause: string): StarUsage[] {
     return usages;
   }
 
-  const starPattern = /(?:\b([a-z0-9_.]+)\.)?\*\s*(?:except\s*\(([^)]+)\))?/g;
+  const starPattern = /(?:\b([a-z0-9_.\-]+)\.)?\*\s*(?:except\s*\(([^)]+)\))?/g;
   let match: RegExpExecArray | null;
 
   while ((match = starPattern.exec(selectClause)) !== null) {
@@ -357,21 +357,23 @@ export function extractReferencedTables(sql: string): string[] {
 
   // Match FROM clause with comma-separated table list.
   // Captures everything after FROM up to the next SQL keyword, pipe operator, closing paren, or semicolon.
-  const fromPattern = /\bfrom\s+((?:[a-z0-9_.]+(?:\s*,\s*[a-z0-9_.]+)*))/g;
+  // Character class includes `-` so hyphenated GCP project IDs in fully-qualified
+  // names (e.g. `my-project.dataset.table`) parse as a single identifier.
+  const fromPattern = /\bfrom\s+((?:[a-z0-9_.\-]+(?:\s*,\s*[a-z0-9_.\-]+)*))/g;
   let match: RegExpExecArray | null;
 
   while ((match = fromPattern.exec(normalizedSql)) !== null) {
     const tableList = match[1];
     for (const tablePart of tableList.split(',')) {
       const trimmed = tablePart.trim().split(/\s/)[0]; // Take only the table name, not alias
-      if (trimmed && /^[a-z0-9_.]+$/.test(trimmed)) {
+      if (trimmed && /^[a-z0-9_.\-]+$/.test(trimmed)) {
         tables.push(trimmed);
       }
     }
   }
 
   // Match JOIN clauses (LEFT JOIN, INNER JOIN, CROSS JOIN, etc.)
-  const joinPattern = /\bjoin\s+([a-z0-9_.]+)/g;
+  const joinPattern = /\bjoin\s+([a-z0-9_.\-]+)/g;
   while ((match = joinPattern.exec(normalizedSql)) !== null) {
     tables.push(match[1]);
   }
