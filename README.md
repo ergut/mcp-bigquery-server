@@ -1,5 +1,4 @@
 # BigQuery MCP Server
-[![smithery badge](https://smithery.ai/badge/@ergut/mcp-bigquery-server)](https://smithery.ai/protocol/@ergut/mcp-bigquery-server)
 <div align="center">
   <img src="assets/mcp-bigquery-server-logo.png" alt="BigQuery MCP Server Logo" width="400"/>
 </div>
@@ -40,10 +39,10 @@ Here's all you need to do:
 | | Simple Mode | Protected Mode |
 |---|---|---|
 | **Use when** | Personal projects, non-sensitive data | PHI, PII, financial data, HIPAA-regulated environments |
-| **Install** | `npx` or Smithery — no local setup needed | Clone this fork and run locally with a `config.json` |
+| **Install** | `npx` — no local setup needed | `npx` or local build with a `config.json` |
 | **Field restrictions** | None | Define `preventedFields` to block sensitive columns |
 | **Auto-scanner** | Not available | Discovers sensitive columns across all datasets automatically |
-| **Setup** | [Option 1](#option-1-quick-install-via-smithery-recommended) below | [Option 2](#option-2-manual-setup) below |
+| **Setup** | [Quick Setup](#quick-setup) below | [Protected Mode Setup](#protected-mode-setup) below |
 
 **Why local deployment matters for sensitive data:** LLM inference happens in the cloud. When an AI agent queries BigQuery, the results are sent to the LLM provider's servers (Anthropic, OpenAI, etc.) for processing — they leave your network. BigQuery IAM controls who can *reach* your data; field restrictions control what the *AI agent surfaces into LLM responses*. These are different protection boundaries. Configuring `preventedFields` ensures PHI and PII never enter the LLM conversation context, regardless of how many queries the agent runs autonomously.
 
@@ -55,23 +54,35 @@ Here's all you need to do:
 - Either Google Cloud CLI installed or a service account key file
 - Claude Desktop (currently the only supported LLM interface)
 
-### Option 1: Quick Install via Smithery (Recommended — Simple Mode)
-To install BigQuery MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/protocol/@ergut/mcp-bigquery-server), run this command in your terminal:
+### Quick Setup
 
-```bash
-npx @smithery/cli install @ergut/mcp-bigquery-server --client claude
-```
-The installer will prompt you for:
+1. **Authenticate with Google Cloud:**
+   ```bash
+   gcloud auth application-default login
+   ```
 
-- Your Google Cloud project ID
-- BigQuery location (defaults to us-central1)
+2. **Add to your Claude Desktop config** (`claude_desktop_config.json`):
+   ```json
+   {
+     "mcpServers": {
+       "bigquery": {
+         "command": "npx",
+         "args": [
+           "-y",
+           "@ergut/mcp-bigquery-server",
+           "--project-id",
+           "your-project-id"
+         ]
+       }
+     }
+   }
+   ```
 
-Once configured, Smithery will automatically update your Claude Desktop configuration and restart the application.
+3. **Start chatting!** Open Claude Desktop and ask questions about your data.
 
-### Option 2: Manual Setup (Protected Mode — for sensitive data)
-If you handle sensitive data or need field-level access restrictions:
+### Protected Mode Setup
 
-> **Note:** The `npx @ergut/mcp-bigquery-server` command installs the published upstream package, which does not yet include Protected Mode. Until [this PR](https://github.com/ergut/mcp-bigquery-server/pull/14) is merged and a new version is published, use the local build below.
+For sensitive data with field-level restrictions:
 
 1. **Authenticate with Google Cloud** (choose one method):
    - Using Google Cloud CLI (great for development):
@@ -84,24 +95,17 @@ If you handle sensitive data or need field-level access restrictions:
      # Remember to keep your service account key file secure and never commit it to version control
      ```
 
-2. **Clone this fork and build locally:**
-   ```bash
-   git clone https://github.com/drharunyuksel/mcp-bigquery-server
-   cd mcp-bigquery-server
-   npm install && npm run build
-   ```
+2. **Add to your Claude Desktop config** (`claude_desktop_config.json`):
 
-3. **Add to your Claude Desktop config**
-   Add this to your `claude_desktop_config.json`:
-
-   - Basic configuration with config file:
+   - With Application Default Credentials:
      ```json
      {
        "mcpServers": {
          "bigquery": {
-           "command": "node",
+           "command": "npx",
            "args": [
-             "/path/to/mcp-bigquery-server/dist/index.js",
+             "-y",
+             "@ergut/mcp-bigquery-server",
              "--project-id",
              "your-project-id",
              "--location",
@@ -114,14 +118,15 @@ If you handle sensitive data or need field-level access restrictions:
      }
      ```
 
-   - With service account and config file:
+   - With a service account key file:
      ```json
      {
        "mcpServers": {
          "bigquery": {
-           "command": "node",
+           "command": "npx",
            "args": [
-             "/path/to/mcp-bigquery-server/dist/index.js",
+             "-y",
+             "@ergut/mcp-bigquery-server",
              "--project-id",
              "your-project-id",
              "--location",
@@ -135,9 +140,9 @@ If you handle sensitive data or need field-level access restrictions:
        }
      }
      ```
-     
 
-4. **Start chatting!**
+
+3. **Start chatting!**
    Open Claude Desktop and start asking questions about your data.
 
 ### Configuration
