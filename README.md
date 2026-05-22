@@ -17,7 +17,7 @@ No more writing SQL queries by hand - just chat naturally with your data!
 
 ## How Does It Work? 🛠️
 
-This server uses the Model Context Protocol (MCP), which is like a universal translator for AI-database communication. While MCP is designed to work with any AI model, right now it's available as a developer preview in Claude Desktop.
+This server uses the Model Context Protocol (MCP), which is like a universal translator for AI-database communication. MCP is supported by Claude Desktop, Claude Code, and a growing number of other AI clients.
 
 Here's all you need to do:
 1. Set up authentication (see below)
@@ -52,7 +52,7 @@ Here's all you need to do:
 - Node.js 14 or higher
 - Google Cloud project with BigQuery enabled
 - Either Google Cloud CLI installed or a service account key file
-- Claude Desktop (currently the only supported LLM interface)
+- Any MCP-compatible client (Claude Desktop, Claude Code, etc.)
 
 ### Quick Setup
 
@@ -430,7 +430,6 @@ Then update your Claude Desktop config to point to your local build:
     }
   }
   ```
-```
 
 ## Current Limitations ⚠️
 
@@ -449,7 +448,7 @@ Then update your Claude Desktop config to point to your local build:
 
 MIT License - See [LICENSE](LICENSE) file for details.
 
-## Author ✍️ 
+## Author ✍️
 
 Salih Ergüt
 
