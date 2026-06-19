@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/ergut-mcp-bigquery-server-badge.png)](https://mseep.ai/app/ergut-mcp-bigquery-server)
+
 # BigQuery MCP Server
 <div align="center">
   <img src="assets/mcp-bigquery-server-logo.png" alt="BigQuery MCP Server Logo" width="400"/>
